@@ -16,25 +16,10 @@ else
     
     var startInfo = new ProcessStartInfo
     {
-        FileName = Environment.ProcessPath ?? "dotnet",
-        Arguments = $"\"{Environment.ProcessPath}\" --child",
+        FileName = Environment.ProcessPath!,
+        Arguments = "--child",
         UseShellExecute = false
     };
-    
-    // If running with dotnet run, we need to use the dll path
-    var currentProcess = Process.GetCurrentProcess();
-    var assemblyLocation = typeof(Program).Assembly.Location;
-    
-    if (!string.IsNullOrEmpty(assemblyLocation) && assemblyLocation.EndsWith(".dll"))
-    {
-        startInfo.FileName = "dotnet";
-        startInfo.Arguments = $"\"{assemblyLocation}\" --child";
-    }
-    else if (!string.IsNullOrEmpty(Environment.ProcessPath))
-    {
-        startInfo.FileName = Environment.ProcessPath;
-        startInfo.Arguments = "--child";
-    }
     
     var childProcess = Process.Start(startInfo);
     
