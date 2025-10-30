@@ -41,6 +41,14 @@ jobs:
       working-directory: ./HangingSample
       run: dotnet build --no-restore
 
+    - name: Upload bin directory
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: bin-${{ matrix.os }}-${{ matrix.entitlements && 'with-entitlements' || 'no-entitlements' }}
+        path: HangingSample/bin/
+        if-no-files-found: ignore
+
     - name: Show entitlements
       run: codesign -d -vvvv --entitlements - HangingSample/bin/Debug/net9.0/HangingSample
       if: matrix.entitlements
