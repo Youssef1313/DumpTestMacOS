@@ -1,0 +1,46 @@
+name: Run Hanging Sample
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  run-hanging-sample:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      working-directory: ./HangingSample
+      run: dotnet restore
+    
+    - name: Build
+      working-directory: ./HangingSample
+      run: dotnet build --no-restore
+    
+    - name: Run Hanging Sample
+      working-directory: ./HangingSample
+      run: dotnet run --no-build
+    
+    - name: Upload dump files
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: dumps-${{ matrix.os }}
+        path: |
+          HangingSample/*.dmp
+        if-no-files-found: ignore
