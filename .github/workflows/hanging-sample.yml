@@ -36,7 +36,7 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Add entitlements
-      run: codesign --sign - --entitlements 'entitlements.plist' HangingSample/bin/Debug/HangingSample
+      run: codesign --sign - --entitlements 'entitlements.plist' HangingSample/bin/Debug/net9.0/HangingSample
 
     - name: Run Hanging Sample
       working-directory: ./HangingSample
