@@ -2,9 +2,9 @@ name: Run Hanging Sample
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -34,7 +34,10 @@ jobs:
     - name: Build
       working-directory: ./HangingSample
       run: dotnet build --no-restore
-    
+
+    - name: Add entitlements
+      run: codesign --sign - --entitlements 'entitlements.plist' HangingSample/bin/Debug/HangingSample
+
     - name: Run Hanging Sample
       working-directory: ./HangingSample
       run: dotnet run --no-build
