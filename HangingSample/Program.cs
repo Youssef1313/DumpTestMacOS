@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Diagnostics.NETCore.Client;
 
 if (args.Length > 0 && args[0] == "--child")
 {
@@ -26,9 +27,30 @@ else
     if (childProcess != null)
     {
         Console.WriteLine($"Child process started with PID: {childProcess.Id}");
-        Console.WriteLine("Parent process waiting for child to exit...");
+        
+        // Wait for 10 seconds
+        Console.WriteLine("Waiting for 10 seconds...");
+        Thread.Sleep(10000);
+        
+        // Dump the hanging child process
+        Console.WriteLine("Dumping the child process...");
+        try
+        {
+            var client = new DiagnosticsClient(childProcess.Id);
+            string dumpPath = $"child_process_{childProcess.Id}.dmp";
+            client.WriteDump(DumpType.Normal, dumpPath);
+            Console.WriteLine($"Dump created at: {Path.GetFullPath(dumpPath)}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to dump process: {ex.Message}");
+        }
+        
+        // Kill the child process
+        Console.WriteLine("Killing the child process...");
+        childProcess.Kill();
         childProcess.WaitForExit();
-        Console.WriteLine("Child process exited.");
+        Console.WriteLine("Child process killed.");
     }
     else
     {
