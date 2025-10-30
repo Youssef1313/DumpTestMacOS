@@ -36,6 +36,7 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Add entitlements
+      if: runner.os == 'macOS'
       run: codesign --sign - --entitlements 'entitlements.plist' HangingSample/bin/Debug/net9.0/HangingSample
 
     - name: Run Hanging Sample
