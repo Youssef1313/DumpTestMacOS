@@ -1,0 +1,62 @@
+name: Run Hanging Sample
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-hanging-sample:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            entitlements: false
+          - os: macos-latest
+            entitlements: false
+          - os: macos-latest
+            entitlements: true
+    
+    runs-on: ${{ matrix.os }}
+    
+    permissions:
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      working-directory: ./HangingSample
+      run: dotnet restore
+    
+    - name: Build
+      working-directory: ./HangingSample
+      run: dotnet build --no-restore
+
+    - name: Show entitlements
+      run: codesign -d -vvvv --entitlements - HangingSample/bin/Debug/net9.0/HangingSample
+      if: matrix.entitlements
+
+    - name: Add entitlements
+      if: matrix.entitlements
+      run: codesign --force --sign - --entitlements 'entitlements.plist' HangingSample/bin/Debug/net9.0/HangingSample
+
+    - name: Run Hanging Sample
+      working-directory: ./HangingSample
+      run: dotnet run --no-build
+    
+    - name: Upload dump files
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: dumps-${{ matrix.os }}-${{ matrix.entitlements && 'with-entitlements' || 'no-entitlements' }}
+        path: HangingSample/*.dmp
+        if-no-files-found: ignore
