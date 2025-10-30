@@ -8,6 +8,9 @@
 *.pdb
 *.cache
 
+# Dump files
+*.dmp
+
 # User-specific files
 *.user
 *.suo
