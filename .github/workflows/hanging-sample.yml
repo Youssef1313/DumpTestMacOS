@@ -41,6 +41,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dumps-${{ matrix.os }}
-        path: |
-          HangingSample/*.dmp
+        path: HangingSample/*.dmp
         if-no-files-found: ignore
