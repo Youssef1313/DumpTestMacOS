@@ -14,18 +14,19 @@ jobs:
         include:
           - os: windows-latest
             entitlements: false
+            noAppHost: false
+          - os: windows-latest
+            entitlements: false
+            noAppHost: true
           - os: macos-latest
             entitlements: false
-            noAppHost: false
-          - os: macos-latest
-            entitlements: true
             noAppHost: false
           - os: macos-latest
             entitlements: false
             noAppHost: true
           - os: macos-latest
             entitlements: true
-            noAppHost: true
+            noAppHost: false
     
     runs-on: ${{ matrix.os }}
     
