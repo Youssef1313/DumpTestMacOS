@@ -16,8 +16,16 @@ jobs:
             entitlements: false
           - os: macos-latest
             entitlements: false
+            noAppHost: false
           - os: macos-latest
             entitlements: true
+            noAppHost: false
+          - os: macos-latest
+            entitlements: false
+            noAppHost: true
+          - os: macos-latest
+            entitlements: true
+            noAppHost: true
     
     runs-on: ${{ matrix.os }}
     
@@ -37,9 +45,15 @@ jobs:
       working-directory: ./HangingSample
       run: dotnet restore
     
-    - name: Build
+    - name: Build (with apphost)
+      if: matrix.noAppHost == false
       working-directory: ./HangingSample
       run: dotnet build --no-restore
+
+    - name: Build (no apphost)
+      if: matrix.noAppHost
+      working-directory: ./HangingSample
+      run: dotnet build --no-restore -p:UseAppHost=false
 
     - name: Show entitlements
       run: codesign -d -vvvv --entitlements - HangingSample/bin/Debug/net9.0/HangingSample
@@ -49,10 +63,18 @@ jobs:
       if: matrix.entitlements
       run: codesign --force --sign - --entitlements 'entitlements.plist' HangingSample/bin/Debug/net9.0/HangingSample
 
-    - name: Run Hanging Sample
+    - name: Run Hanging Sample (with apphost)
+      if: matrix.noAppHost == false
       working-directory: ./HangingSample
       run: dotnet run --no-build
-    
+      timeout-minutes: 1
+
+    - name: Run Hanging Sample (no apphost)
+      if: matrix.noAppHost
+      working-directory: ./HangingSample
+      run: dotnet run --no-build -p:UseAppHost=false
+      timeout-minutes: 1
+
     - name: Upload dump files
       if: always()
       uses: actions/upload-artifact@v4
