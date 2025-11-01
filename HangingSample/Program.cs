@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Diagnostics.NETCore.Client;
 
-if (args.Length > 0 && args[0] == "--child")
+if (args.Any(arg => arg == "--child"))
 {
     // Child process - hang forever
     Console.WriteLine("Child process started. Hanging forever...");
