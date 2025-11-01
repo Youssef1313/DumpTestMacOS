@@ -18,7 +18,7 @@ else
     var startInfo = new ProcessStartInfo
     {
         FileName = Environment.ProcessPath!,
-        Arguments = "--child",
+        Arguments = Environment.CommandLine + " --child",
         UseShellExecute = false
     };
     
